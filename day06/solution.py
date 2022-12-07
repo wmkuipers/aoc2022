@@ -9,9 +9,8 @@ def input_parser(filename):
 
 
 def find_first_uniue_set(number, string):
-    s = list(string)
     i = number
-    while i < len(s):
+    while i < len(string):
         candidate = set(string[i-number:i])
         if len(candidate) == number:
             return i
@@ -19,11 +18,9 @@ def find_first_uniue_set(number, string):
 
     
 def main(test=True):
-    data = input_parser("input.txt" if not test else "test.txt")[0]
-    part_one = find_first_uniue_set(4, data)
-    part_two = find_first_uniue_set(14, data)
+    data = input_parser("aoc_2022_day06_extra_input.txt")[0]
+    part_one = find_first_uniue_set(94, data)
     print(f"Part one: {part_one}")
-    print(f"Part two: {part_two}")
     
 
 
