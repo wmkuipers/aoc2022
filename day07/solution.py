@@ -1,5 +1,5 @@
-from pprint import pprint as print
-from directory import Directory
+# from pprint import pprint as print
+from directory import Directory, parse_cd, parse_ls
 
 directories = {}       #directories are stored with key being full path
 TOTAL_DISK_SIZE = 70000000
@@ -9,45 +9,6 @@ def input_reader(filename):
     raw = [line.strip() for line in open(filename).read().split('$') if line != '']
     return raw
 
-def parse_cd(cwd, arg):
-    arg = arg[3:]
-    if arg == '/':
-        return '/'
-    if arg == '..':
-        return '/' + '/'.join(cwd.split("/")[1:-1])
-    
-    if cwd != '/':
-        return f"{cwd}/{arg}"
-    else:
-        return f"/{arg}"
-
-def parse_ls(current_directory, args):
-    if current_directory not in directories:
-        directories.update({current_directory: Directory()})
-
-    current_dir = directories[current_directory]
-    for inode in args[3:].split('\n'):
-        # print(f"Inode: {inode}")
-        if inode.startswith('dir'):
-            subdir_name = inode.split(" ")[1]
-            if current_directory == "/":
-                full_subdir_name = f"/{subdir_name}"
-            else:
-                full_subdir_name = f"{current_directory}/{subdir_name}"
-            if full_subdir_name not in directories:
-                #Add new child directory to big book of directories
-                directories.update({
-                    full_subdir_name: Directory()
-                })
-                #Register new directory as child of current
-                directories[current_directory].add_child_directory(
-                    directories[full_subdir_name]
-                )
-        else:
-            filesize, filename = inode.split(" ")
-            if filename not in current_dir.files:
-                current_dir.files.update({filename: filesize})
-       
 def main(test=True):
     data = input_reader("test.txt" if test else "input.txt")
 
@@ -56,7 +17,7 @@ def main(test=True):
         if action.startswith("cd"):
             cwd = parse_cd(cwd, action)
         elif action.startswith("ls"):
-            parse_ls(cwd, action)
+            parse_ls(cwd, action, directories)
 
 
     part_one = sum([D.total_size for d, D in directories.items()
@@ -72,6 +33,9 @@ def main(test=True):
     smallest_candidate = delete_candidates[min(delete_candidates)]
     print(smallest_candidate.total_size)
 
+    print(directories["/"].print_dir(1))
+
+
 
 if __name__ == '__main__':
-    main(test=False)
+    main(test=True)
